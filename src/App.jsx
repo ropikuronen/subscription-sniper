@@ -173,15 +173,19 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white px-6 pb-32 pt-10 sm:px-12">
-      <header className="mb-16">
-        <p className="text-xs font-semibold tracking-[0.35em] uppercase text-white/40">
-          Your personal hitman.
-        </p>
-        <h1 className="mt-3 text-5xl font-black leading-none tracking-tight sm:text-7xl">
-          Subscription
-          <br />
-          Sniper
-        </h1>
+      <header className="mb-16 flex items-start justify-between">
+        <div>
+          <p className="text-xs font-semibold tracking-[0.35em] uppercase text-white/40">
+            Your personal hitman.
+          </p>
+          <h1 className="mt-3 text-5xl font-black leading-none tracking-tight sm:text-7xl">
+            Subscription
+            <br />
+            Sniper
+          </h1>
+        </div>
+        
+        <img src="/logo.png" alt="Sniper Logo" className="h-20 w-20 object-contain opacity-80" />
       </header>
 
       <section>
@@ -305,6 +309,7 @@ export default function App() {
               type="datetime-local"
               value={expiresAt}
               onChange={(e) => setExpiresAt(e.target.value)}
+              onClick={(e) => e.target.showPicker()}
               required
               className="w-full bg-transparent text-xl text-white/80 outline-none"
             />
