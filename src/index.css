@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background: #000000;
+  color: #ffffff;
+}
+
+body {
+  font-family: Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+input,
+button {
+  font-family: inherit;
+}
+
+input[type='datetime-local']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+@keyframes sniper-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 10px #ff0033;
+  }
+  50% {
+    opacity: 0.72;
+    text-shadow: 0 0 28px #ff0033;
+  }
+}
+
+.sniper-pulse {
+  animation: sniper-pulse 1.6s ease-in-out infinite;
+}
