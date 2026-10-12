@@ -178,9 +178,9 @@ export default function App() {
           Your personal hitman.
         </p>
         <h1 className="mt-3 text-5xl font-black leading-none tracking-tight sm:text-7xl">
-          Subscription
+          SubscriptionTEST
           <br />
-          Sniper
+          SniperTEST
         </h1>
       </header>
 
