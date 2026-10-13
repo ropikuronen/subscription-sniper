@@ -1,7 +1,16 @@
 const DB_NAME = 'subscription-sniper';
 const STORE = 'targets';
-const DAY_MS = 24 * 60 * 60 * 1000;
 
+// Aikarajat millisekunteina muistutustasoille
+const THRESHOLDS = {
+  LEVEL_1_24H: 24 * 60 * 60 * 1000,
+  LEVEL_2_12H: 12 * 60 * 60 * 1000,
+  LEVEL_3_6H:   6 * 60 * 60 * 1000,
+  LEVEL_4_3H:   3 * 60 * 60 * 1000,
+  LEVEL_5_1H:   1 * 60 * 60 * 1000,
+};
+
+// Yksinkertaistettu sanakirja Service Workerille (vain ne mitä se oikeasti tarvitsee taustalla linkin tekoon)
 const CANCEL_LINKS = {
   netflix: 'https://www.netflix.com/cancelplan',
   amazon: 'https://www.amazon.com/mc/pipelines/cancellation',
@@ -109,14 +118,14 @@ async function broadcastTargets(targets) {
   }
 }
 
-async function notifyTarget(target) {
+async function notifyTarget(target, levelMessage) {
   const title = `🎯 Cancel ${target.name} now.`;
   const options = {
-    body: `${target.name} leaves the free-trial window in under 24 hours.`,
+    body: levelMessage,
     icon: '/icon.jpeg',
     badge: '/icon.jpeg',
-    tag: `sniper-${target.id}`,
-    renotify: true,
+    tag: `sniper-${target.id}`, 
+    renotify: true, // Varmistaa, että puhelin tärisee/soi uudestaan, kun uusi ilmoitus korvaa vanhan!
     data: {
       cancelUrl: getCancelUrl(target.name, target.customCancelUrl),
       id: target.id,
@@ -136,15 +145,46 @@ async function checkTargets() {
   const now = Date.now();
 
   for (const target of targets) {
-    if (target.cancelled || target.notified) continue;
-    const remaining = new Date(target.expiresAt).getTime() - now;
-    if (remaining <= DAY_MS) {
-      await notifyTarget(target);
-      target.notified = true;
+    // Jos peruttu, jätetään kokonaan huomiotta
+    if (target.cancelled) continue;
+
+    // Varmistetaan että vanhoilla (joilla on pelkkä 'notified: true') on myös notificationLevel
+    if (target.notificationLevel === undefined) {
+      target.notificationLevel = target.notified ? 1 : 0;
+    }
+
+    const remainingMs = new Date(target.expiresAt).getTime() - now;
+    let newLevel = target.notificationLevel;
+    let message = "";
+
+    // Tarkistetaan portaat ylhäältä alas.
+    // Mitä vähemmän aikaa, sitä korkeampi taso.
+    if (remainingMs <= THRESHOLDS.LEVEL_5_1H && target.notificationLevel < 5) {
+      newLevel = 5;
+      message = `CRITICAL: Less than 1 hour left for ${target.name}! Tap here to cancel immediately.`;
+    } else if (remainingMs <= THRESHOLDS.LEVEL_4_3H && target.notificationLevel < 4) {
+      newLevel = 4;
+      message = `URGENT: ${target.name} trial ends in under 3 hours.`;
+    } else if (remainingMs <= THRESHOLDS.LEVEL_3_6H && target.notificationLevel < 3) {
+      newLevel = 3;
+      message = `${target.name} trial ends in under 6 hours. Cancel it now.`;
+    } else if (remainingMs <= THRESHOLDS.LEVEL_2_12H && target.notificationLevel < 2) {
+      newLevel = 2;
+      message = `${target.name} trial ends in under 12 hours.`;
+    } else if (remainingMs <= THRESHOLDS.LEVEL_1_24H && target.notificationLevel < 1) {
+      newLevel = 1;
+      message = `${target.name} leaves the free-trial window in under 24 hours.`;
+    }
+
+    // Jos taso on noussut (esim. siirryttiin 12h -> 6h sisälle)
+    if (newLevel > target.notificationLevel) {
+      await notifyTarget(target, message);
+      target.notificationLevel = newLevel;
       changed = true;
     }
   }
 
+  // Tallenna ja synkkaa UI, jos päivityksiä tuli
   if (changed) {
     await writeTargets(targets);
     await broadcastTargets(targets);
