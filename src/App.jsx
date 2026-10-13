@@ -3,6 +3,12 @@ import { getCancelUrl } from './cancelLinks';
 import { loadTargets, saveTargets, syncToServiceWorker } from './storage';
 import { formatRemaining, isSniperWindow } from './time';
 
+// 1. Suosituimpien palveluiden sanakirja Autofilliä varten
+const POPULAR_SERVICES = [
+  'Netflix', 'Spotify', 'Disney+', 'YouTube Premium', 'iCloud',
+  'Adobe', 'Amazon Prime', 'Max', 'PlayStation Plus', 'Xbox Game Pass'
+];
+
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -36,6 +42,9 @@ export default function App() {
   const [name, setName] = useState('');
   const [expiresAt, setExpiresAt] = useState('');
   const [customCancelUrl, setCustomCancelUrl] = useState('');
+  
+  // Uusi tila Custom URL -kentän piilottamista varten
+  const [showCustomUrl, setShowCustomUrl] = useState(false);
 
   const live = useMemo(
     () =>
@@ -52,6 +61,14 @@ export default function App() {
         .sort((a, b) => new Date(b.cancelledAt || 0) - new Date(a.cancelledAt || 0)),
     [targets],
   );
+
+  // Autofill-ehdotusten suodatus käyttäjän kirjoituksen mukaan
+  const suggestedServices = name.trim() === ''
+    ? POPULAR_SERVICES.slice(0, 5) // Näytä top 5 tyhjänä
+    : POPULAR_SERVICES.filter((s) =>
+        s.toLowerCase().includes(name.toLowerCase()) &&
+        s.toLowerCase() !== name.toLowerCase()
+      ).slice(0, 5);
 
   useEffect(() => {
     saveTargets(targets);
@@ -95,6 +112,7 @@ export default function App() {
     setExpiresAt('');
     setCustomCancelUrl('');
     setAdding(false);
+    setShowCustomUrl(false); // Nollataan myös Custom URL -kentän näkyvyys
   }
 
   function addTarget(event) {
@@ -106,13 +124,11 @@ export default function App() {
     const year = targetDate.getFullYear();
     const currentTime = new Date();
 
-    // 1. Tulevaisuuden tarkistus (Vuosi 2100 tai yli)
     if (year >= 2100) {
       alert(`Really, year ${year}? You're gonna live that old?`);
       return;
     }
 
-    // 2. Menneisyyden tarkistus
     if (targetDate < currentTime) {
       alert("We can't change our past mistakes, focus on the present.");
       return;
@@ -284,7 +300,7 @@ export default function App() {
           <p className="mb-5 text-xs font-semibold tracking-[0.3em] uppercase text-white/35">
             New target
           </p>
-          <label className="mb-5 block">
+          <label className="mb-5 block relative">
             <span className="mb-2 block text-xs tracking-[0.2em] uppercase text-white/35">
               Service name
             </span>
@@ -296,6 +312,21 @@ export default function App() {
               placeholder="Netflix"
               className="w-full bg-transparent text-3xl font-extrabold outline-none placeholder:text-white/20"
             />
+            {/* Autofill -ehdotukset */}
+            {suggestedServices.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {suggestedServices.map(service => (
+                  <button
+                    key={service}
+                    type="button"
+                    onClick={() => setName(service)}
+                    className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white/70 hover:bg-white/20 hover:text-white transition-colors"
+                  >
+                    {service}
+                  </button>
+                ))}
+              </div>
+            )}
           </label>
           <label className="mb-5 block">
             <span className="mb-2 block text-xs tracking-[0.2em] uppercase text-white/35">
@@ -310,19 +341,32 @@ export default function App() {
               className="w-full bg-transparent text-xl text-white/80 outline-none"
             />
           </label>
-          <label className="mb-7 block">
-            <span className="mb-2 block text-xs tracking-[0.2em] uppercase text-white/35">
-              Custom cancel URL
-            </span>
-            <input
-              type="text"
-              inputMode="url"
-              value={customCancelUrl}
-              onChange={(e) => setCustomCancelUrl(e.target.value)}
-              placeholder="Optional — paste if the service isn’t known"
-              className="w-full bg-transparent text-lg outline-none placeholder:text-white/20"
-            />
-          </label>
+          
+          {/* Custom URL piilotuslogiikka */}
+          {!showCustomUrl ? (
+            <button
+              type="button"
+              onClick={() => setShowCustomUrl(true)}
+              className="mb-7 block text-sm font-semibold tracking-[0.15em] text-white/40 hover:text-white transition-colors"
+            >
+              + Add custom cancellation link (Optional)
+            </button>
+          ) : (
+            <label className="mb-7 block">
+              <span className="mb-2 block text-xs tracking-[0.2em] uppercase text-white/35">
+                Custom cancel URL
+              </span>
+              <input
+                type="text"
+                inputMode="url"
+                value={customCancelUrl}
+                onChange={(e) => setCustomCancelUrl(e.target.value)}
+                placeholder="Paste URL here"
+                className="w-full bg-transparent text-lg outline-none placeholder:text-white/20"
+              />
+            </label>
+          )}
+
           <div className="flex items-center justify-between gap-6">
             <button
               type="button"
