@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getCancelUrl } from './cancelLinks';
+// 1. Tuodaan jättimäinen CANCEL_LINKS sanakirja käyttöön!
+import { getCancelUrl, CANCEL_LINKS } from './cancelLinks';
 import { loadTargets, saveTargets, syncToServiceWorker } from './storage';
 import { formatRemaining, isSniperWindow } from './time';
 
-// 1. Suosituimpien palveluiden sanakirja Autofilliä varten
-const POPULAR_SERVICES = [
-  'Netflix', 'Spotify', 'Disney+', 'YouTube Premium', 'iCloud',
-  'Adobe', 'Amazon Prime', 'Max', 'PlayStation Plus', 'Xbox Game Pass'
-];
+// 2. Muutetaan kaikki sanakirjan nimet nätiksi Autofilliä varten (esim "hbo max" -> "Hbo Max")
+const ALL_SERVICES = Object.keys(CANCEL_LINKS).map((key) =>
+  key.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+);
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -43,8 +43,8 @@ export default function App() {
   const [expiresAt, setExpiresAt] = useState('');
   const [customCancelUrl, setCustomCancelUrl] = useState('');
   
-  // Uusi tila Custom URL -kentän piilottamista varten
   const [showCustomUrl, setShowCustomUrl] = useState(false);
+  const [showAll, setShowAll] = useState(false); // Uusi tila More-napille
 
   const live = useMemo(
     () =>
@@ -62,13 +62,24 @@ export default function App() {
     [targets],
   );
 
-  // Autofill-ehdotusten suodatus käyttäjän kirjoituksen mukaan
-  const suggestedServices = name.trim() === ''
-    ? POPULAR_SERVICES.slice(0, 5) // Näytä top 5 tyhjänä
-    : POPULAR_SERVICES.filter((s) =>
-        s.toLowerCase().includes(name.toLowerCase()) &&
-        s.toLowerCase() !== name.toLowerCase()
-      ).slice(0, 5);
+  // 3. Älykäs Autofill -logiikka
+  const isTyping = name.trim().length > 0;
+  let suggestedServices = [];
+
+  if (isTyping) {
+    // Jos kirjoittaa (esim "ch"), etsitään koko laajasta sanakirjasta osumat
+    suggestedServices = ALL_SERVICES.filter((s) =>
+      s.toLowerCase().includes(name.toLowerCase()) &&
+      s.toLowerCase() !== name.toLowerCase()
+    ).slice(0, 15);
+  } else {
+    // Jos ei kirjoita, näytetään joko Top 5 tai kaikki
+    if (showAll) {
+      suggestedServices = ALL_SERVICES;
+    } else {
+      suggestedServices = ['Netflix', 'Spotify', 'Disney+', 'YouTube Premium', 'iCloud'];
+    }
+  }
 
   useEffect(() => {
     saveTargets(targets);
@@ -112,7 +123,8 @@ export default function App() {
     setExpiresAt('');
     setCustomCancelUrl('');
     setAdding(false);
-    setShowCustomUrl(false); // Nollataan myös Custom URL -kentän näkyvyys
+    setShowCustomUrl(false);
+    setShowAll(false); // Nollataan myös "More..." tila
   }
 
   function addTarget(event) {
@@ -188,9 +200,20 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white px-6 pb-32 pt-10 sm:px-12">
+    <div className="min-h-screen bg-black text-white px-6 pb-32 pt-10 sm:px-12 relative">
+      
+      {/* 4. Support -nappi oikeassa yläkulmassa */}
+      <a 
+        href="https://ko-fi.com/" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="absolute top-8 right-6 text-xs font-bold uppercase tracking-widest text-white/30 hover:text-white transition-colors sm:right-12"
+      >
+        [ Support ]
+      </a>
+
       <header className="mb-16">
-        <p className="text-xs font-semibold tracking-[0.35em] uppercase text-white/40">
+        <p className="text-xs font-semibold tracking-[0.35em] uppercase text-white/40 mt-6 sm:mt-0">
           Your personal hitman.
         </p>
         <h1 className="mt-3 text-5xl font-black leading-none tracking-tight sm:text-7xl">
@@ -295,7 +318,7 @@ export default function App() {
       {adding ? (
         <form
           onSubmit={addTarget}
-          className="fixed inset-x-0 bottom-0 bg-black px-6 pb-8 pt-5 sm:px-12"
+          className="fixed inset-x-0 bottom-0 bg-black px-6 pb-8 pt-5 sm:px-12 z-50 border-t border-white/10"
         >
           <p className="mb-5 text-xs font-semibold tracking-[0.3em] uppercase text-white/35">
             New target
@@ -312,22 +335,31 @@ export default function App() {
               placeholder="Netflix"
               className="w-full bg-transparent text-3xl font-extrabold outline-none placeholder:text-white/20"
             />
-            {/* Autofill -ehdotukset */}
-            {suggestedServices.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {suggestedServices.map(service => (
-                  <button
-                    key={service}
-                    type="button"
-                    onClick={() => setName(service)}
-                    className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white/70 hover:bg-white/20 hover:text-white transition-colors"
-                  >
-                    {service}
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Autofill -ehdotukset ja "More..." nappi (Rullattava max-h-40) */}
+            <div className="mt-3 flex flex-wrap gap-2 max-h-40 overflow-y-auto pb-2">
+              {suggestedServices.map(service => (
+                <button
+                  key={service}
+                  type="button"
+                  onClick={() => setName(service)}
+                  className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white/70 hover:bg-white/20 hover:text-white transition-colors"
+                >
+                  {service}
+                </button>
+              ))}
+              
+              {!isTyping && !showAll && (
+                <button
+                  type="button"
+                  onClick={() => setShowAll(true)}
+                  className="rounded-full bg-white/5 px-4 py-2 text-sm font-semibold text-white/40 hover:bg-white/20 hover:text-white transition-colors border border-white/10"
+                >
+                  More...
+                </button>
+              )}
+            </div>
           </label>
+          
           <label className="mb-5 block">
             <span className="mb-2 block text-xs tracking-[0.2em] uppercase text-white/35">
               Expiration date
@@ -342,7 +374,6 @@ export default function App() {
             />
           </label>
           
-          {/* Custom URL piilotuslogiikka */}
           {!showCustomUrl ? (
             <button
               type="button"
@@ -375,7 +406,7 @@ export default function App() {
             >
               Close
             </button>
-            <button type="submit" className="text-2xl font-black">
+            <button type="submit" className="text-2xl font-black hover:text-sniper transition-colors">
               Add target
             </button>
           </div>
@@ -385,7 +416,7 @@ export default function App() {
           type="button"
           onClick={handleOpenAdd}
           aria-label="Add target"
-          className="fixed bottom-7 right-7 flex h-16 w-16 items-center justify-center rounded-full bg-white text-4xl font-black leading-none text-black"
+          className="fixed bottom-7 right-7 flex h-16 w-16 items-center justify-center rounded-full bg-white text-4xl font-black leading-none text-black z-40 shadow-lg shadow-white/10"
         >
           +
         </button>
