@@ -204,12 +204,12 @@ export default function App() {
       
       {/* 4. Support -nappi oikeassa yläkulmassa */}
       <a 
-        href="https://ko-fi.com/" 
+        href="https://buymeacoffee.com/ropi" 
         target="_blank" 
         rel="noopener noreferrer" 
         className="absolute top-8 right-6 text-xs font-bold uppercase tracking-widest text-white/30 hover:text-white transition-colors sm:right-12"
       >
-        [ Support ]
+        [ Support me ]
       </a>
 
       <header className="mb-16">
