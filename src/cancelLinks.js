@@ -25,6 +25,8 @@ export const CANCEL_LINKS = {
   curiositystream: 'https://curiositystream.com/account',
   nebula: 'https://nebula.tv/account',
   funimation: 'https://www.funimation.com/account/',
+  'yle areena': 'https://areena.yle.fi/oma-areena', // Suomi
+  'prime video': 'https://www.amazon.com/gp/video/settings',
 
   // --- MUSIIKKI, ÄÄNIKIRJAT JA PODCASTIT ---
   spotify: 'https://www.spotify.com/account/subscription/',
@@ -44,6 +46,8 @@ export const CANCEL_LINKS = {
   podme: 'https://podme.com/account',
   podplay: 'https://www.podplay.com/settings',
   deezer: 'https://www.deezer.com/account/subscription',
+  'siriusxm': 'https://care.siriusxm.com/manage-my-account',
+  'tunein premium': 'https://tunein.com/settings/',
 
   // --- PELIT JA GAMING ---
   'playstation plus': 'https://www.playstation.com/acct/subscriptions',
@@ -63,6 +67,8 @@ export const CANCEL_LINKS = {
   'humble choice': 'https://www.humblebundle.com/user/settings',
   'final fantasy xiv': 'https://secure.square-enix.com/account/app',
   eveonline: 'https://secure.eveonline.com/CancelSubscription.aspx',
+  'meta quest+': 'https://secure.oculus.com/my/subscriptions/',
+  'steam': 'https://store.steampowered.com/account/subscriptions/', // Jotkin pelien sisäiset tilaukset
 
   // --- OHJELMISTOT, PILVI JA TYÖKALUT ---
   adobe: 'https://account.adobe.com/plans',
@@ -91,6 +97,8 @@ export const CANCEL_LINKS = {
   todoist: 'https://todoist.com/app/settings/billing',
   zapier: 'https://zapier.com/app/billing',
   jetbrains: 'https://account.jetbrains.com/licenses',
+  '1password': 'https://my.1password.com/billing', // Tuotu ylemmäs
+  'proton drive': 'https://account.proton.me/drive/dashboard',
 
   // --- TIETOTURVA JA VPN ---
   nordvpn: 'https://my.nordaccount.com/billing/my-subscriptions/',
@@ -99,7 +107,6 @@ export const CANCEL_LINKS = {
   cyberghost: 'https://my.cyberghostvpn.com/en_US/subscriptions',
   protonvpn: 'https://account.protonvpn.com/dashboard',
   mullvad: 'https://mullvad.net/en/account/#/',
-  '1password': 'https://my.1password.com/billing',
   lastpass: 'https://lastpass.com/my.php',
   dashlane: 'https://app.dashlane.com/settings/subscription',
   bitwarden: 'https://vault.bitwarden.com/#/settings/subscription',
@@ -117,6 +124,9 @@ export const CANCEL_LINKS = {
   'copy.ai': 'https://app.copy.ai/settings/billing',
   runway: 'https://app.runwayml.com/account/billing',
   elevenlabs: 'https://elevenlabs.io/app/subscription',
+  'gemini advanced': 'https://one.google.com/settings/cancel', // Gemini ohjaa Google Oneen
+  'github pro': 'https://github.com/settings/billing',
+  'hugging face': 'https://huggingface.co/settings/billing',
 
   // --- TERVEYS, LIIKUNTA JA HYVINVOINTI ---
   peloton: 'https://members.onepeloton.com/preferences/subscriptions',
@@ -135,6 +145,7 @@ export const CANCEL_LINKS = {
   fressi: 'https://www.fressi.fi/omat-sivut/',
   elixia: 'https://www.elixia.fi/my-sats/',
   fitness24seven: 'https://fi.fitness24seven.com/omat-sivut',
+  'easyfit': 'https://www.easyfit.fi/fi/asiakassivut', // Suomi
 
   // --- RUOKA, RAVINTOLAT JA TOIMITUKSET ---
   'uber one': 'https://wallet.uber.com',
@@ -150,6 +161,8 @@ export const CANCEL_LINKS = {
   deliveroo: 'https://deliveroo.co.uk/account',
   foodora: 'https://www.foodora.fi/profile',
   factor: 'https://www.factor75.com/settings/plan',
+  fiksuruoka: 'https://www.fiksuruoka.fi/omat-tiedot', // Suomi
+  'matsmart': 'https://www.matsmart.fi/asiakastili', // Suomi
 
   // --- DEITTAILU ---
   tinder: 'https://tinder.com/app/settings',
@@ -158,6 +171,7 @@ export const CANCEL_LINKS = {
   okcupid: 'https://www.okcupid.com/settings',
   badoo: 'https://badoo.com/settings',
   grindr: 'https://www.grindr.com/settings',
+  'valoa': 'https://valoa.fi/tili', // Suomi deitti
 
   // --- UUTISET, LEHDET JA OPPIMINEN ---
   duolingo: 'https://www.duolingo.com/settings/super',
@@ -175,6 +189,11 @@ export const CANCEL_LINKS = {
   kauppalehti: 'https://asiakaspalvelu.almamedia.fi/',
   iltalehti: 'https://asiakaspalvelu.almamedia.fi/',
   iltasanomat: 'https://oma.sanoma.fi/',
+  'suomen kuvalehti': 'https://asiakaspalvelu.otavamedia.fi/',
+  tekniikanmaailma: 'https://asiakaspalvelu.otavamedia.fi/',
+  'financial times': 'https://myaccount.ft.com/details/core/view',
+  'the economist': 'https://myaccount.economist.com/s/',
+  'washington post': 'https://subscribe.washingtonpost.com/account/manage-subscription',
 
   // --- SOSIAALINEN MEDIA JA CREATOR-ALUSTAT ---
   'linkedin premium': 'https://www.linkedin.com/mypreferences/d/categories/premium-subscription',
@@ -184,6 +203,7 @@ export const CANCEL_LINKS = {
   onlyfans: 'https://onlyfans.com/my/settings/subscriptions',
   fansly: 'https://fansly.com/settings/subscriptions',
   substack: 'https://substack.com/settings',
+  snapchat: 'https://accounts.snapchat.com/accounts/subscription',
 
   // --- MUUT / E-COMMERCE / BOKSIT ---
   'walmart+': 'https://www.walmart.com/plus/my-account',
@@ -197,7 +217,11 @@ export const CANCEL_LINKS = {
   ipsy: 'https://www.ipsy.com/account',
   manscaped: 'https://www.manscaped.com/account',
   meundies: 'https://www.meundies.com/account/subscriptions',
-  scentbird: 'https://www.scentbird.com/account'
+  scentbird: 'https://www.scentbird.com/account',
+  'vessi': 'https://vessi.com/account',
+  'casetify': 'https://www.casetify.com/user/login',
+  'finnkino': 'https://www.finnkino.fi/oma-finnkino/', // Suomi
+
 };
 
 export const ALIASES = {
@@ -260,6 +284,7 @@ export const ALIASES = {
   lightroom: 'adobe',
   illustrator: 'adobe',
   premier: 'adobe',
+  '1pw': '1password',
   
   // AI aliases
   'chat gpt': 'chatgpt',
@@ -267,6 +292,7 @@ export const ALIASES = {
   'gpt4': 'chatgpt',
   'chatgpt plus': 'chatgpt',
   openai: 'chatgpt',
+  'gemini': 'gemini advanced',
   
   // Social aliases
   twitter: 'x premium',
@@ -305,6 +331,8 @@ export const ALIASES = {
   is: 'iltasanomat',
   il: 'iltalehti',
   kl: 'kauppalehti',
+  sk: 'suomen kuvalehti',
+  tm: 'tekniikanmaailma',
   f247: 'fitness24seven',
   f24: 'fitness24seven',
   sats: 'elixia',
@@ -314,7 +342,8 @@ export const ALIASES = {
   'spoty': 'spotify',
   'spotfy': 'spotify',
   'amzon': 'amazon',
-  'audble': 'audible'
+  'audble': 'audible',
+  'cruncroll': 'crunchyroll',
 };
 
 export function normalizeName(value) {
